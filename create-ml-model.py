@@ -77,7 +77,7 @@ plt.ylabel('Distance')
 plt.show()
 
 # create clusters, use 2.5 as distance threshold to control number of clusters
-cluster_labels = fcluster(Z, t=3.25, criterion='distance')
+cluster_labels = fcluster(Z, t=2.5, criterion='distance')
 test_corpus['cluster'] = cluster_labels
 grouped = test_corpus.groupby('cluster')
 tfidf_matrix = vectorizer.fit_transform(test_corpus['processed_text'])
