@@ -11,14 +11,18 @@ from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from scipy.cluster.hierarchy import linkage, dendrogram, fcluster
 import matplotlib.pyplot as plt
+import shutil
 
 nlp = spacy.load('en_core_web_sm')
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 
+
 conn = sqlite3.connect("test-courses.db")
-df = pd.read_sql_query('SELECT * FROM course_list', conn)
+cursor = conn.cursor()
+
+df = pd.read_sql_query('SELECT * FROM temp_table', conn)
 df['college_name'] = df['college_name'].astype(str)
 df['course_name'] = df['course_name'].astype(str)
 df['course_description'] = df['course_description'].astype(str)
@@ -28,7 +32,7 @@ df.drop_duplicates(inplace=True)
 def process_text(text):
     extra_stop_words = set([
     'and', 'but', 'for', 'so', 'is', 'the', 'it', 'by', 
-    'a', 'an', 'of', 'or', 'to', 'in', 'on', 'with', 'at', 'as', 'course', 'college', 'university', 'stanford'
+    'a', 'an', 'of', 'or', 'to', 'in', 'on', 'with', 'at', 'as', 'facilitate', 'tgr', 'eyre', 'course', 'college', 'university', 'stanford'
     ]) 
     stop_words = set(stopwords.words('english')).union(extra_stop_words)
     lemmatizer = WordNetLemmatizer()
@@ -73,7 +77,7 @@ plt.ylabel('Distance')
 plt.show()
 
 # create clusters, use 2.5 as distance threshold to control number of clusters
-cluster_labels = fcluster(Z, t=2.5, criterion='distance')
+cluster_labels = fcluster(Z, t=3.25, criterion='distance')
 test_corpus['cluster'] = cluster_labels
 grouped = test_corpus.groupby('cluster')
 tfidf_matrix = vectorizer.fit_transform(test_corpus['processed_text'])
